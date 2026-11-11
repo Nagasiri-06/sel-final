@@ -1,5 +1,6 @@
 FROM maven:3.9.9-eclipse-temurin-17
 
+# Install Google Chrome and dependencies for headless execution
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -13,11 +14,14 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Copy pom.xml and cache dependencies first
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
+# Copy test suite, source code, and local HTML page
 COPY src ./src
 COPY webpage ./webpage
 COPY testng.xml .
 
+# Default command when container starts
 CMD ["mvn", "test"]
